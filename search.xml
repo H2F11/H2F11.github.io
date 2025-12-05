@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>弹塑性力学</title>
+      <link href="/2024/OldBlogs/08%E5%BC%B9%E5%A1%91%E6%80%A7%E5%8A%9B%E5%AD%A6/"/>
+      <url>/2024/OldBlogs/08%E5%BC%B9%E5%A1%91%E6%80%A7%E5%8A%9B%E5%AD%A6/</url>
+      
+        <content type="html"><![CDATA[<p>内容主要以《工程弹塑性引论》和《弹性力学基础》两本书为主。</p><h1 id="张量分析"><a href="#张量分析" class="headerlink" title="张量分析"></a>张量分析</h1><h2 id="张量基础"><a href="#张量基础" class="headerlink" title="张量基础"></a>张量基础</h2><p>本想详细写一下张量分析基础的，奈何总是拖延，空不出时间来(敲公式太累，bushi），这里先放几个比较好理解的链接吧。<br>需要有一定的线性代数基础，否则这还是看不懂的。该痛苦的还是得痛苦，只不过希望你看完下面链接能有一种轻舟已过万重山的感觉。</p><ol><li><a href="https://www.cnblogs.com/duoba/p/15273401.html">直观认识张量</a></li><li><a href="https://zhuanlan.zhihu.com/p/547791133">张量基本运算</a></li><li><a href="https://wuli.wiki/online/Tensor.html">张量与线性映射</a></li><li><a href="https://dothinking.github.io/2013-07-30-%E5%BA%94%E5%8A%9B%E5%BC%A0%E9%87%8F%E7%9A%84%E8%AE%A4%E8%AF%86%EF%BC%9A%E7%BA%BF%E6%80%A7%E5%8F%98%E6%8D%A2/">应力张量-线性映射</a></li></ol><p>总结来说，张量是一个不变量，在不同基下有不同坐标表达，于是衍生出利用坐标变换定义的张量的形式(1)和坐标分量加基矢量定义法(2)。<br>$$ \tag{1} {T_{{i_1}{i_2}...{i_n}}} = {\beta _{{i_1}{j_1}}}{\beta _{{i_2}{j_2}}}...{\beta _{{i_n}{j_n}}}{T_{{j_1}{j_2}...{j_n}}}$$</p><blockquote><p>$i_1$取1、2、3，其余指标同理； $ {T_{ {i_1} {i_2}…{i_n} } } $是张量$\mathbf{T}$的一个分量，一共$3^n$个这样的分量的有序集合构成一个n阶张量$\mathbf{T}$。</p></blockquote>$$ \tag{2} \mathbf{T} = {T_{{i_1}{i_2}...{i_n}}}{e_{{i_1}}} \otimes {e_{{i_2}}} \otimes ... \otimes {e_{{i_n}}}$$<blockquote><p>最简单的，例如一阶张量，即向量，其定义方式为$ \mathbf{T} = {T_i}{e_i}$，这样对比理解就好了。注意，此处$e_i$都是一阶张量(向量).</p></blockquote><p>当然，很多人直接站在高维角度说，<strong>张量本质是线性映射</strong>。这句话是站在张量应用角度来说的，举几个简单例子，也可仔细阅读链接3、4。</p><ol><li>质量：零阶张量，可以将加速度向量映射成力向量。(此处为线性变换，之所以称线性映射是为了更加普遍的情况)</li><li>应力张量：二阶张量，可以将截面位置映射为截面应力。(详见链接4:<a href="https://dothinking.github.io/2013-07-30-%E5%BA%94%E5%8A%9B%E5%BC%A0%E9%87%8F%E7%9A%84%E8%AE%A4%E8%AF%86%EF%BC%9A%E7%BA%BF%E6%80%A7%E5%8F%98%E6%8D%A2/">应力张量-线性映射</a>)</li></ol><h2 id="虚功原理证明——张量形式"><a href="#虚功原理证明——张量形式" class="headerlink" title="虚功原理证明——张量形式"></a>虚功原理证明——张量形式</h2><p>学了张量分析，总得用一用它吧，看它在证明虚功原理上有多方便！<br><div class="row">    <embed src="virtualwork.pdf" width="100%" height="550" type="application/pdf"></div></p><p>csdn上一篇文章也写得不错，可以参考一下：<a href="https://blog.csdn.net/leizhengshenglzs/article/details/140280675">力学有限元的基石：虚功原理的推导</a></p><h1 id="弹塑性力学数值求解基本过程"><a href="#弹塑性力学数值求解基本过程" class="headerlink" title="弹塑性力学数值求解基本过程"></a>弹塑性力学数值求解基本过程</h1><p>弹塑性材料的数值求解目标是：<strong>已知总应变增量，求下一步的应力状态</strong>。其核心是“材料状态更新”（stress update），在有限元中由返回映射（return-mapping）算法实现。全过程可分为以下关键步骤：</p><p><strong>（1）弹性试算（Predictor Step）</strong><br>根据弹性本构关系，先假设本步完全弹性：</p>$$\tag{1} \sigma_{trial}=\sigma^{old}+ C: \Delta \varepsilon$$<p>此时不考虑塑性，应力为 trial 状态。</p><p><strong>（2）屈服判定（using Yield Criterion）</strong><br>将试应力代入屈服函数：</p>$$\tag{2}f(\sigma_{trial},\kappa^{old}) \begin{cases}<0 & \text{保持弹性，无塑性}\\>0 & \text{发生塑性，需要修正}\end{cases}$$<p>屈服准则决定是否需要进入塑性返回映射。</p><p><strong>（3）塑性修正（Corrector Step：流动法则 + 强化法则）</strong><br>若试应力越过屈服面，需要沿塑性流动方向将其“投回”到屈服面上：</p><ul><li><strong>流动法则（Flow Rule）</strong>决定塑性应变增量方向：</li></ul>$$\tag{3}d\varepsilon^p = d\lambda \frac{\partial g}{\partial \sigma}$$<p>其中 $g$ 为塑性势函数；若 $g=f$，为关联流动法则。</p><ul><li><strong>强化准则（Hardening Rule）</strong>控制屈服面随塑性发展如何变化：  <ul><li>各向同性强化：屈服球（或屈服面）变大  </li><li>运动强化：屈服面平移  </li><li>混合强化：两者叠加  </li></ul></li></ul><p>强化变量 $\kappa$ 通常满足  </p>$$\tag{4}d\kappa = h(d\lambda)$$<p>塑性修正通过求解一致方程：</p>$$\tag{5}f(\sigma^{new},\kappa^{new})=0$$<p>得到塑性乘子 $\Delta \lambda$，并更新应力与内变量。</p><p><strong>（4）更新本构切线与状态量</strong><br>用于有限元求解的切线刚度需保证收敛性：</p>$$\tag{6}\mathbb{C}_{ep} = \frac{\partial \sigma}{\partial \varepsilon}$$<p>最后存储更新后的：  </p><ul><li>应力  </li><li>塑性应变  </li><li>强化变量  </li><li>切线刚度  </li></ul><p>这就是弹塑性数值求解完整流程。</p><h1 id="H-W空间直角坐标系与柱坐标系关系"><a href="#H-W空间直角坐标系与柱坐标系关系" class="headerlink" title="H-W空间直角坐标系与柱坐标系关系"></a>H-W空间直角坐标系与柱坐标系关系</h1><p>三维主应力空间 $(\sigma_1,\sigma_2,\sigma_3)$ 常通过 Haigh–Westergaard（H-W）变换转化为更具有材料物理意义的坐标系。</p><p><strong>（1）直角坐标系：主应力空间</strong></p>$$\tag{7}(\sigma_1,\sigma_2,\sigma_3)$$<p>坐标轴是三个主应力，几何上难直观看材料行为。</p><hr><p><strong>（2）H-W 正交坐标（ξ, ρ, z）</strong></p><p>通过正交变换，将主应力分解成：  </p><ul><li><strong>ξ</strong>：体积方向  </li><li><strong>ρ</strong>：偏应力大小  </li><li><strong>z</strong>：Lode 角方向的偏应力分量  </li></ul><p>通常写作：</p>$$\tag{8}\xi = \frac{1}{\sqrt{3}}(\sigma_1+\sigma_2+\sigma_3)=\frac{I_1}{\sqrt{3}}$$$$\tag{9}\rho=\sqrt{\frac{2}{3}}\,\sqrt{J_2}$$<hr><p><strong>（3）柱坐标形式：$I_1, \sqrt{J_2}, \theta$</strong>  </p><p>这是屈服面最常使用的形式：</p><ul><li>$I_1$：体积应力 → 决定材料受压/受拉状态  </li><li>$\sqrt{J_2}$：剪切强度大小  </li><li>$\theta$：Lode 角（剪切模式）</li></ul><p>其中：</p>$$\tag{10}\sin 3\theta = \frac{3\sqrt{3}}{2}\frac{J_3}{J_2^{3/2}}$$<p>因此：  </p><ul><li>主应力空间 = “几何坐标”  </li><li>$I_1, J_2, \theta$ = “物理意义坐标”  </li></ul><p>通过此映射，屈服面形状和材料特性可以被极为清晰地表达。</p><h1 id="不同屈服准则适用条件及各参数作用"><a href="#不同屈服准则适用条件及各参数作用" class="headerlink" title="不同屈服准则适用条件及各参数作用"></a>不同屈服准则适用条件及各参数作用</h1><hr><p><strong>（1）von Mises 屈服准则（适用于金属）</strong></p>$$\tag{11}f=\sqrt{J_2}-k=0$$<p>特点：  </p><ul><li>不依赖 $I_1$、$\theta$  </li><li>适合延性金属  </li></ul><p>参数含义：  </p><ul><li>$k$：屈服剪切强度  </li></ul><hr><p><strong>（2）Tresca 屈服准则（适用于金属）</strong></p>$$\tag{12}f=\max|\sigma_i-\sigma_j|- \sigma_Y=0$$<p>特点：  </p><ul><li>明显依赖 Lode 角（六角形屈服面）  </li><li>更精确但不光滑  </li></ul><p>参数：  </p><ul><li>$\sigma_Y$：屈服强度  </li></ul><hr><p><strong>（3）Drucker–Prager（DP）准则（适用于土、岩石、混凝土）</strong></p>$$\tag{13}f=\alpha I_1 + \sqrt{J_2}-k=0$$<p>特点：  </p><ul><li>考虑 $I_1$（压力敏感）  </li><li><strong>不依赖 $\theta$</strong>  </li></ul><p>参数：  </p><ul><li>$\alpha$：压力敏感度  </li><li>$k$：剪切屈服强度  </li></ul><hr><p><strong>（4）Mohr–Coulomb（MC）准则（适用于岩土材料）</strong></p>$$\tag{14}f= \tau - \sigma \tan\phi - c=0$$<p>转化到三维后依赖：  </p><ul><li>$I_1$  </li><li>$J_2$  </li><li>$\theta$  </li></ul><p>参数：  </p><ul><li>$c$：黏聚力  </li><li>$\phi$：内摩擦角  </li></ul><hr><p><strong>（5）Willam–Warnke / Matsuoka–Nakai（混凝土高精度模型）</strong><br>特点：  </p><ul><li>强烈依赖 $\theta$  </li><li>屈服面呈三角形或花瓣状  </li></ul><hr><p><strong>（6）Cam-Clay（黏性土）</strong></p>$$\tag{15}f = \frac{3}{2}\frac{s:s}{(M p)^2} + \frac{p(p-p_c)}{p_c^2}=0$$<p>特点：  </p><ul><li>强 $I_1$ 依赖  </li><li>描述固结、体积–剪切耦合  </li></ul><p>参数：  </p><ul><li>$M$：剪胀参数  </li><li>$p_c$：前期固结压力  </li></ul><hr><p><strong>总体总结：</strong></p><ul><li>$I_1$：体积应力，决定压力敏感性  </li><li>$J_2$：剪切强度大小  </li><li>$\theta$：剪切模式（拉剪/压剪/纯剪）  </li></ul><p>屈服准则的差别主要体现在：  </p><ul><li>是否考虑压力敏感性（$I_1$）  </li><li>是否考虑剪切模式（$\theta$）  </li><li>屈服面几何是否光滑、连续、可导</li></ul><h1 id="弹塑性力学大作业"><a href="#弹塑性力学大作业" class="headerlink" title="弹塑性力学大作业"></a>弹塑性力学大作业</h1><p>本次作业的完成离不开吴长厚吴兄的帮忙，在此对他表示感谢。</p><div class="row">    <embed src="弹塑性力学作业.pdf" width="100%" height="550" type="application/pdf"></div></0>]]></content>
+      
+      
+      <categories>
+          
+          <category> 力学基础 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 弹塑性力学 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>数值分析算法集锦</title>
       <link href="/2025/02/02%E6%95%B0%E5%80%BC%E5%88%86%E6%9E%90/"/>
       <url>/2025/02/02%E6%95%B0%E5%80%BC%E5%88%86%E6%9E%90/</url>
@@ -275,31 +300,6 @@
         <tags>
             
             <tag> 傅里叶变换 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>弹塑性力学</title>
-      <link href="/2024/OldBlogs/08%E5%BC%B9%E5%A1%91%E6%80%A7%E5%8A%9B%E5%AD%A6/"/>
-      <url>/2024/OldBlogs/08%E5%BC%B9%E5%A1%91%E6%80%A7%E5%8A%9B%E5%AD%A6/</url>
-      
-        <content type="html"><![CDATA[<h1 id="张量分析"><a href="#张量分析" class="headerlink" title="张量分析"></a>张量分析</h1><h2 id="张量基础"><a href="#张量基础" class="headerlink" title="张量基础"></a>张量基础</h2><p>本想详细写一下张量分析基础的，奈何总是拖延，空不出时间来(敲公式太累，bushi），这里先放几个比较好理解的链接吧。<br>需要有一定的线性代数基础，否则这还是看不懂的。该痛苦的还是得痛苦，只不过希望你看完下面链接能有一种轻舟已过万重山的感觉。</p><ol><li><a href="https://www.cnblogs.com/duoba/p/15273401.html">直观认识张量</a></li><li><a href="https://zhuanlan.zhihu.com/p/547791133">张量基本运算</a></li><li><a href="https://wuli.wiki/online/Tensor.html">张量与线性映射</a></li><li><a href="https://dothinking.github.io/2013-07-30-%E5%BA%94%E5%8A%9B%E5%BC%A0%E9%87%8F%E7%9A%84%E8%AE%A4%E8%AF%86%EF%BC%9A%E7%BA%BF%E6%80%A7%E5%8F%98%E6%8D%A2/">应力张量-线性映射</a></li></ol><p>总结来说，张量是一个不变量，在不同基下有不同坐标表达，于是衍生出利用坐标变换定义的张量的形式(1)和坐标分量加基矢量定义法(2)。<br>$$ \tag{1} {T_{{i_1}{i_2}...{i_n}}} = {\beta _{{i_1}{j_1}}}{\beta _{{i_2}{j_2}}}...{\beta _{{i_n}{j_n}}}{T_{{j_1}{j_2}...{j_n}}}$$</p><blockquote><p>$i_1$取1、2、3，其余指标同理； $ {T_{ {i_1} {i_2}…{i_n} } } $是张量$\mathbf{T}$的一个分量，一共$3^n$个这样的分量的有序集合构成一个n阶张量$\mathbf{T}$。</p></blockquote>$$ \tag{2} \mathbf{T} = {T_{{i_1}{i_2}...{i_n}}}{e_{{i_1}}} \otimes {e_{{i_2}}} \otimes ... \otimes {e_{{i_n}}}$$<blockquote><p>最简单的，例如一阶张量，即向量，其定义方式为$ \mathbf{T} = {T_i}{e_i}$，这样对比理解就好了。注意，此处$e_i$都是一阶张量(向量).</p></blockquote><p>当然，很多人直接站在高维角度说，<strong>张量本质是线性映射</strong>。这句话是站在张量应用角度来说的，举几个简单例子，也可仔细阅读链接3、4。</p><ol><li>质量：零阶张量，可以将加速度向量映射成力向量。(此处为线性变换，之所以称线性映射是为了更加普遍的情况)</li><li>应力张量：二阶张量，可以将截面位置映射为截面应力。(详见链接4:<a href="https://dothinking.github.io/2013-07-30-%E5%BA%94%E5%8A%9B%E5%BC%A0%E9%87%8F%E7%9A%84%E8%AE%A4%E8%AF%86%EF%BC%9A%E7%BA%BF%E6%80%A7%E5%8F%98%E6%8D%A2/">应力张量-线性映射</a>)</li></ol><h2 id="虚功原理证明——张量形式"><a href="#虚功原理证明——张量形式" class="headerlink" title="虚功原理证明——张量形式"></a>虚功原理证明——张量形式</h2><p>学了张量分析，总得用一用它吧，看它在证明虚功原理上有多方便！<br><div class="row">    <embed src="virtualwork.pdf" width="100%" height="550" type="application/pdf"></div></p><p>csdn上一篇文章也写得不错，可以参考一下：<a href="https://blog.csdn.net/leizhengshenglzs/article/details/140280675">力学有限元的基石：虚功原理的推导</a></p><h1 id="弹塑性力学大作业"><a href="#弹塑性力学大作业" class="headerlink" title="弹塑性力学大作业"></a>弹塑性力学大作业</h1><p>本次作业的完成离不开吴长厚吴兄的帮忙，在此对他表示感谢。</p><div class="row">    <embed src="弹塑性力学作业.pdf" width="100%" height="550" type="application/pdf"></div>]]></content>
-      
-      
-      <categories>
-          
-          <category> 力学基础 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> 弹塑性力学 </tag>
             
         </tags>
       
