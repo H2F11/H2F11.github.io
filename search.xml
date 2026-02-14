@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>拉伸颈缩判据</title>
+      <link href="/2026/02/%E6%9D%90%E6%96%99%E9%A2%88%E7%BC%A9%E5%88%A4%E6%8D%AE/"/>
+      <url>/2026/02/%E6%9D%90%E6%96%99%E9%A2%88%E7%BC%A9%E5%88%A4%E6%8D%AE/</url>
+      
+        <content type="html"><![CDATA[<p>以下内容来自于ChatGPT对话总结，有兴趣可参考<a href="https://www.bilibili.com/video/BV1QD4y177Q6/?spm_id_from=333.337.search-card.all.click&amp;vd_source=41769b252ab81d02e47e5775242eda15">ABAQUS 中如何人为的引发颈缩现象？</a>.</p><h1 id="拉伸颈缩判据中的体积不变假设与面积变化公式推导"><a href="#拉伸颈缩判据中的体积不变假设与面积变化公式推导" class="headerlink" title="拉伸颈缩判据中的体积不变假设与面积变化公式推导"></a>拉伸颈缩判据中的体积不变假设与面积变化公式推导</h1><p>在单轴拉伸分析中，颈缩起始通常由 <strong>Considère 判据</strong>描述，其核心公式为：</p>$$\frac{d\sigma_{\text{true}}}{d\varepsilon_{\text{true}}} = \sigma_{\text{true}}$$<p>该判据的推导过程中，一个至关重要但常被忽略的假设是：<strong>金属在塑性阶段体积近似不变</strong>。本文系统解释这一假设的物理来源，并给出截面积随真应变变化的推导过程。</p><hr><h2 id="1-颈缩的物理本质（Considere-判据的直观理解）"><a href="#1-颈缩的物理本质（Considere-判据的直观理解）" class="headerlink" title="1. 颈缩的物理本质（Considère 判据的直观理解）"></a>1. 颈缩的物理本质（Considère 判据的直观理解）</h2><p>在拉伸试件中，均匀变形能够维持的前提是：</p><blockquote><p>材料的应变硬化能力，足以抵消截面减小带来的应力集中趋势。</p></blockquote><p>一旦材料硬化“跟不上”截面缩小引起的应力放大，局部变形将形成正反馈，从而导致颈缩。</p><hr><h2 id="2-单轴拉伸中的力学描述"><a href="#2-单轴拉伸中的力学描述" class="headerlink" title="2. 单轴拉伸中的力学描述"></a>2. 单轴拉伸中的力学描述</h2><p>单轴拉伸时，轴向力可写为：</p>$$F = \sigma_{\text{true}} \cdot A$$<p>其中：</p><ul><li>$\sigma_{\text{true}}$：真实应力  </li><li>$A$：当前截面积  </li></ul><p>颈缩起始对应于 <strong>承载力达到极值</strong>：</p>$$\frac{dF}{d\varepsilon_{\text{true}}} = 0$$<p>为了对该条件进行推导，必须明确 <strong>截面积 $A$ 随应变的变化关系</strong>。</p><hr><h2 id="3-塑性阶段的体积不变假设"><a href="#3-塑性阶段的体积不变假设" class="headerlink" title="3. 塑性阶段的体积不变假设"></a>3. 塑性阶段的体积不变假设</h2><p>对于延性金属（如钢、铝）：</p><ul><li>塑性变形主要由位错滑移控制  </li><li>原子间距基本不变  </li><li>在颈缩和损伤发生之前，不产生显著孔隙  </li></ul><p>因此，塑性应变满足：</p>$$\varepsilon_{xx}^p + \varepsilon_{yy}^p + \varepsilon_{zz}^p = 0$$<p>即：</p>$$\varepsilon_v^p = 0$$<p>这意味着：</p><p><strong>塑性流动过程中，材料形状改变，但体积保持不变。</strong></p><hr><h2 id="4-单轴拉伸条件下的体积守恒推导"><a href="#4-单轴拉伸条件下的体积守恒推导" class="headerlink" title="4. 单轴拉伸条件下的体积守恒推导"></a>4. 单轴拉伸条件下的体积守恒推导</h2><p>试件体积定义为：</p>$$V = A \cdot L$$<p>采用真应变定义，体积变化可写为：</p>$$\ln\frac{V}{V_0}=\ln\frac{A}{A_0} + \ln\frac{L}{L_0}$$<p>其中：</p><ul><li>$A_0, L_0$：初始截面积与长度  </li></ul><p>体积不变条件：</p>$$\ln\frac{V}{V_0} = 0$$<p>代入得：</p>$$\ln\frac{A}{A_0} + \varepsilon_{\text{true}} = 0$$<p>整理可得：</p>$$\ln\frac{A}{A_0} = -\varepsilon_{\text{true}}$$<p>两边取指数：</p>$$A = A_0 \, e^{-\varepsilon_{\text{true}}}$$<p>这就是单轴拉伸中截面积随真应变变化的基本公式。</p><hr><h2 id="5-Considere-颈缩判据的完整推导"><a href="#5-Considere-颈缩判据的完整推导" class="headerlink" title="5. Considère 颈缩判据的完整推导"></a>5. Considère 颈缩判据的完整推导</h2><p>将面积表达式代入力的定义：</p>$$F = \sigma_{\text{true}}(\varepsilon) \, A_0 \, e^{-\varepsilon}$$<p>对 $\varepsilon$ 求导：</p>$$\frac{dF}{d\varepsilon}=A_0 e^{-\varepsilon}\left(\frac{d\sigma_{\text{true}}}{d\varepsilon}- \sigma_{\text{true}}\right)$$<p>令</p>$$\frac{dF}{d\varepsilon} = 0$$<p>得到颈缩起始条件：</p>$$\frac{d\sigma_{\text{true}}}{d\varepsilon_{\text{true}}}=\sigma_{\text{true}}$$<hr><h2 id="6-判据的物理含义"><a href="#6-判据的物理含义" class="headerlink" title="6. 判据的物理含义"></a>6. 判据的物理含义</h2><p>该判据可以解读为：</p><ul><li>左边：材料的应变硬化能力（切线模量）</li><li>右边：由于截面缩小产生的几何放大效应</li></ul><p>三种情况对应不同变形状态：</p><div class="table-container"><table><thead><tr><th>条件</th><th>变形状态</th></tr></thead><tbody><tr><td>$\frac{d\sigma}{d\varepsilon} &gt; \sigma$</td><td>均匀塑性变形</td></tr><tr><td>$\frac{d\sigma}{d\varepsilon} = \sigma$</td><td>颈缩起始</td></tr><tr><td>$\frac{d\sigma}{d\varepsilon} &lt; \sigma$</td><td>颈缩发展</td></tr></tbody></table></div><hr><h2 id="7-体积不变假设的适用范围"><a href="#7-体积不变假设的适用范围" class="headerlink" title="7. 体积不变假设的适用范围"></a>7. 体积不变假设的适用范围</h2><p>体积不变假设成立的前提包括：</p><ul><li>延性金属材料  </li><li>颈缩发生之前  </li><li>未考虑损伤或孔隙演化  </li></ul><p>以下情况中，该假设将失效：</p><ul><li>延性损伤（孔洞形核与长大）</li><li>多孔材料</li><li>土体、岩石、混凝土等摩擦型材料</li></ul><hr><h2 id="8-总结"><a href="#8-总结" class="headerlink" title="8. 总结"></a>8. 总结</h2><p>体积不变假设并非数学技巧，而是延性金属塑性流动的物理本质。<br>它为截面积演化提供了明确表达式，从而使颈缩判据的推导成为可能。</p><p>Considère 判据揭示了颈缩的本质：</p><blockquote><p><strong>当材料的硬化能力不足以抵消几何软化时，均匀变形必然失稳。</strong></p></blockquote>]]></content>
+      
+      
+      <categories>
+          
+          <category> 力学基础 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 弹塑性力学 </tag>
+            
+            <tag> 有限元分析 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>弹塑性力学</title>
       <link href="/2024/OldBlogs/08%E5%BC%B9%E5%A1%91%E6%80%A7%E5%8A%9B%E5%AD%A6/"/>
       <url>/2024/OldBlogs/08%E5%BC%B9%E5%A1%91%E6%80%A7%E5%8A%9B%E5%AD%A6/</url>
